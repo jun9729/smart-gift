@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GiftFinder — AI가 완벽한 선물을 찾아드립니다</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --primary:#7c3aed;--primary-light:#a78bfa;--primary-dark:#5b21b6;
+  --accent:#f59e0b;--accent-light:#fbbf24;
+  --bg:#f8f7ff;--surface:#ffffff;--text:#1e1b4b;--text-secondary:#6b7280;
+  --border:#e5e7eb;--shadow:0 4px 24px rgba(124,58,237,0.08);
+  --radius:16px;--radius-sm:10px;
+}
+[data-theme="dark"]{
+  --bg:#0f0d1a;--surface:#1a1730;--text:#e8e6f0;--text-secondary:#9ca3af;
+  --border:#2d2b3d;--shadow:0 4px 24px rgba(0,0,0,0.3);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s;}
+
+/* Header */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);transition:background .3s;}
+.logo{font-size:1.4rem;font-weight:900;color:var(--primary);display:flex;align-items:center;gap:8px;}
+.logo span{font-size:1.6rem;}
+.theme-toggle{background:var(--surface);border:2px solid var(--border);border-radius:50px;padding:6px 14px;cursor:pointer;font-size:1.1rem;transition:all .3s;color:var(--text);}
+.theme-toggle:hover{border-color:var(--primary);background:var(--primary);color:#fff;}
+
+/* Top Banner */
+.top-banner{text-align:center;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,#7c3aed 0%,#a78bfa 50%,#f59e0b 100%);padding:60px 24px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+.hero-content{position:relative;z-index:1;max-width:700px;margin:0 auto;}
+.hero h1{font-size:2.6rem;font-weight:900;color:#fff;margin-bottom:12px;text-shadow:0 2px 8px rgba(0,0,0,0.15);}
+.hero p{font-size:1.15rem;color:rgba(255,255,255,0.9);margin-bottom:32px;line-height:1.7;}
+
+/* Search */
+.search-box{max-width:600px;margin:0 auto;position:relative;}
+.search-box textarea{width:100%;padding:18px 24px;border:none;border-radius:var(--radius);font-size:1.05rem;font-family:'Noto Sans KR',sans-serif;resize:none;height:64px;box-shadow:0 8px 32px rgba(0,0,0,0.15);outline:none;transition:box-shadow .3s;background:var(--surface);color:var(--text);}
+.search-box textarea:focus{box-shadow:0 8px 40px rgba(124,58,237,0.3);}
+.search-box textarea::placeholder{color:var(--text-secondary);}
+.search-btn{margin-top:14px;background:linear-gradient(135deg,var(--accent),#d97706);color:#fff;border:none;padding:14px 36px;border-radius:50px;font-size:1.05rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(245,158,11,0.4);}
+.search-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(245,158,11,0.5);}
+.search-btn:active{transform:translateY(0);}
+.search-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+
+/* Chips */
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:20px;}
+.chip{background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);padding:8px 18px;border-radius:50px;font-size:0.9rem;cursor:pointer;transition:all .3s;backdrop-filter:blur(4px);}
+.chip:hover{background:rgba(255,255,255,0.35);transform:translateY(-1px);}
+
+/* Layout */
+.main-wrap{flex:1;max-width:1200px;width:100%;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr 280px;gap:24px;}
+@media(max-width:900px){.main-wrap{grid-template-columns:1fr;}.sidebar{display:none;}}
+
+/* Sidebar */
+.sidebar{display:flex;flex-direction:column;gap:20px;}
+.sidebar-ad{background:var(--surface);border-radius:var(--radius);padding:12px;border:1px solid var(--border);text-align:center;}
+.sidebar-ad-label{font-size:0.75rem;color:var(--text-secondary);margin-bottom:6px;}
+
+/* Results */
+.results-section{min-height:200px;}
+.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column;}
+.result-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(124,58,237,0.12);}
+.card-emoji{font-size:2.8rem;margin-bottom:12px;}
+.card-name{font-size:1.15rem;font-weight:700;margin-bottom:6px;color:var(--text);}
+.card-price{font-size:0.95rem;color:var(--primary);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:4px;}
+.card-reason{font-size:0.9rem;color:var(--text-secondary);line-height:1.6;margin-bottom:16px;flex:1;}
+.coupang-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#e44d26,#c4341d);color:#fff;text-decoration:none;padding:10px 20px;border-radius:var(--radius-sm);font-size:0.9rem;font-weight:600;transition:transform .2s,box-shadow .2s;}
+.coupang-btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(228,77,38,0.3);}
+
+/* Mid-ad */
+.mid-ad{grid-column:1/-1;text-align:center;padding:12px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);}
+.mid-ad-label{font-size:0.75rem;color:var(--text-secondary);margin-bottom:6px;}
+
+/* Loading */
+.loading{text-align:center;padding:60px 20px;}
+.spinner{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{color:var(--text-secondary);font-size:1rem;}
+
+/* Empty */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-secondary);}
+.empty-state .icon{font-size:4rem;margin-bottom:16px;}
+.empty-state p{font-size:1.05rem;line-height:1.7;}
+
+/* Footer */
+.footer{background:var(--surface);border-top:1px solid var(--border);padding:24px;text-align:center;margin-top:auto;}
+.footer-text{font-size:0.85rem;color:var(--text-secondary);line-height:1.8;}
+.footer-brand{font-weight:700;color:var(--primary);}
+.bottom-banner{margin-top:16px;}
+
+/* Scroll to top */
+.scroll-top{position:fixed;bottom:24px;right:24px;width:48px;height:48px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:1.3rem;cursor:pointer;box-shadow:0 4px 16px rgba(124,58,237,0.3);transition:opacity .3s,transform .3s;opacity:0;transform:translateY(20px);pointer-events:none;z-index:99;display:flex;align-items:center;justify-content:center;}
+.scroll-top.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
+.scroll-top:hover{background:var(--primary-dark);}
+
+/* Error */
+.error-msg{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:16px 20px;border-radius:var(--radius-sm);margin-bottom:16px;font-size:0.95rem;}
+[data-theme="dark"] .error-msg{background:#2d1b1b;border-color:#5c2020;color:#fca5a5;}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="logo"><span>🎁</span> GiftFinder</div>
+  <button class="theme-toggle" id="themeToggle" aria-label="다크모드 전환">🌙</button>
+</header>
+
+<!-- Top Banner Ad -->
+<div class="top-banner">
+  <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:728px;margin:0 auto;display:block;"></iframe>
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>AI가 완벽한 선물을 찾아드립니다</h1>
+    <p>누구에게, 어떤 상황에 줄 선물인지 알려주세요.<br>AI가 딱 맞는 선물을 추천해 드릴게요!</p>
+    <div class="search-box">
+      <textarea id="searchInput" placeholder="예: 30대 남자 친구 생일 선물 뭐가 좋을까?" rows="2"></textarea>
+      <br>
+      <button class="search-btn" id="searchBtn">🔮 AI 선물 추천</button>
+    </div>
+    <div class="chips">
+      <span class="chip" data-query="30대 남자 생일선물">🎂 30대 남자 생일선물</span>
+      <span class="chip" data-query="여자친구 크리스마스 선물">🎄 여자친구 크리스마스</span>
+      <span class="chip" data-query="부모님 결혼기념일 선물">💍 부모님 결혼기념일</span>
+      <span class="chip" data-query="직장 동료 승진 축하 선물">🎉 직장 동료 승진 축하</span>
+    </div>
+  </div>
+</section>
+
+<!-- Main Content -->
+<div class="main-wrap">
+  <main class="results-section" id="results">
+    <div class="empty-state" id="emptyState">
+      <div class="icon">🎁</div>
+      <p>위 검색창에 선물 받을 사람과 상황을 입력하면<br>AI가 맞춤 선물을 추천해 드려요!</p>
+    </div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="sidebar-ad">
+      <div class="sidebar-ad-label">광고</div>
+      <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_side&width=260&height=240" width="100%" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url"></iframe>
+    </div>
+    <div class="sidebar-ad">
+      <div class="sidebar-ad-label">광고</div>
+      <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_side&width=260&height=240" width="100%" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url"></iframe>
+    </div>
+  </aside>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-text">
+    <span class="footer-brand">GiftFinder</span> — AI 선물 추천 서비스<br>
+    이 포스팅은 쿠팡 파트너스 활동의 일환으로 수수료를 제공받습니다.
+  </div>
+  <div class="bottom-banner" style="margin-top:16px;">
+    <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:728px;margin:0 auto;display:block;"></iframe>
+  </div>
+</footer>
+
+<!-- Scroll to Top -->
+<button class="scroll-top" id="scrollTopBtn" aria-label="맨 위로">↑</button>
+
+<script>
+// === API Key ===
+const _EK = 'LawFinder2026!@#';
+function _d(e){const d=atob(e);let r='';for(let i=0;i<d.length;i++)r+=String.fromCharCode(d.charCodeAt(i)^_EK.charCodeAt(i%_EK.length));return r;}
+const _KEYS = { ai: _d('PwpaNhsBDkgIRFNFQEoVSjgRQiIQXwsgFHADfgJVdFV+KS4ALTQrLh1XAGsCVCtqDlIhBDMEKhEwYXt4UxkFUQALPwIOLzs3RlRRU05pFmYrCyN1KwIGDjR4Y2VnGBBIeQtCBw4HISQqY3FCWUh2YhZYIApRBBcwPmpyWFtoLnwWVCI2LwFRCTNDdntVdHkVHBEoMFpYJlc3VkJjUE83Ty4xAAc=') };
+
+document.addEventListener('DOMContentLoaded', function() {
+  localStorage.setItem('openaiKey', _KEYS.ai);
+  initTheme();
+});
+
+// === Clean JSON ===
+function cleanJson(s) { return s.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim(); }
+
+// === Theme ===
+function initTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('themeToggle').textContent = '☀️';
+  }
+}
+
+document.getElementById('themeToggle').addEventListener('click', function() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    document.documentElement.removeAttribute('data-theme');
+    this.textContent = '🌙';
+    localStorage.setItem('theme', 'light');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    this.textContent = '☀️';
+    localStorage.setItem('theme', 'dark');
+  }
+});
+
+// === Scroll to Top ===
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+window.addEventListener('scroll', function() {
+  if (window.scrollY > 400) {
+    scrollTopBtn.classList.add('visible');
+  } else {
+    scrollTopBtn.classList.remove('visible');
+  }
+});
+scrollTopBtn.addEventListener('click', function() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// === Chips ===
+document.querySelectorAll('.chip').forEach(function(chip) {
+  chip.addEventListener('click', function() {
+    document.getElementById('searchInput').value = this.dataset.query;
+    doSearch();
+  });
+});
+
+// === Search ===
+const searchBtn = document.getElementById('searchBtn');
+const searchInput = document.getElementById('searchInput');
+
+searchBtn.addEventListener('click', doSearch);
+searchInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    doSearch();
+  }
+});
+
+async function doSearch() {
+  const query = searchInput.value.trim();
+  if (!query) return;
+
+  const results = document.getElementById('results');
+  searchBtn.disabled = true;
+
+  // Show loading
+  results.innerHTML = '<div class="loading"><div class="spinner"></div><div class="loading-text">AI가 선물을 찾고 있어요...</div></div>';
+
+  try {
+    const apiKey = localStorage.getItem('openaiKey');
+    if (!apiKey) throw new Error('API 키를 찾을 수 없습니다.');
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        temperature: 0.7,
+        messages: [
+          {
+            role: 'system',
+            content: '선물 추천 전문가. 사용자 요청에 맞는 선물 5~8개를 추천. JSON 배열로만 응답: [{"name":"상품명","price":"가격대","reason":"추천이유","emoji":"관련이모지","searchQuery":"쿠팡검색키워드"}]'
+          },
+          {
+            role: 'user',
+            content: query
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(function() { return {}; });
+      throw new Error(errData.error?.message || '요청에 실패했습니다. (HTTP ' + response.status + ')');
+    }
+
+    const data = await response.json();
+    const raw = data.choices[0].message.content;
+    const cleaned = cleanJson(raw);
+    const gifts = JSON.parse(cleaned);
+
+    renderResults(gifts);
+
+  } catch (err) {
+    results.innerHTML = '<div class="error-msg">⚠️ ' + err.message + '</div><div class="empty-state"><div class="icon">😅</div><p>죄송합니다, 오류가 발생했어요.<br>다시 시도해 주세요!</p></div>';
+  } finally {
+    searchBtn.disabled = false;
+  }
+}
+
+function renderResults(gifts) {
+  const results = document.getElementById('results');
+  let html = '<div class="results-grid">';
+
+  gifts.forEach(function(item, index) {
+    const coupangUrl = 'https://www.coupang.com/np/search?component=&q=' + encodeURIComponent(item.searchQuery) + '&channel=user&src=1032001&spec=10305010&addtag=400&ctag=giftfinder&lptag=AF7220529';
+
+    html += '<div class="result-card">';
+    html += '<div class="card-emoji">' + (item.emoji || '🎁') + '</div>';
+    html += '<div class="card-name">' + escapeHtml(item.name) + '</div>';
+    html += '<div class="card-price">💰 ' + escapeHtml(item.price) + '</div>';
+    html += '<div class="card-reason">' + escapeHtml(item.reason) + '</div>';
+    html += '<a href="' + coupangUrl + '" target="_blank" rel="noopener noreferrer" class="coupang-btn">🛒 쿠팡에서 보기</a>';
+    html += '</div>';
+
+    // Insert mid-ad after 3rd item
+    if (index === 2 && gifts.length > 3) {
+      html += '<div class="mid-ad"><div class="mid-ad-label">광고</div><iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_mid&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:728px;margin:0 auto;display:block;"></iframe></div>';
+    }
+  });
+
+  html += '</div>';
+  results.innerHTML = html;
+
+  // Smooth scroll to results
+  results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
