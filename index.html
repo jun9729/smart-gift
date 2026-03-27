@@ -386,6 +386,31 @@ body.dark .error-msg{background:#2d1b1b;border-color:#5c2020;color:#fca5a5;}
 :focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 
+/* === Button Loading Spinner === */
+.btn-loading{pointer-events:none;opacity:0.8;}
+.btn-loading::after{content:'';display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-left:6px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* === Share Button === */
+.share-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--surface-alt);border:1.5px solid var(--border);
+  color:var(--text-secondary);text-decoration:none;padding:9px 16px;
+  border-radius:var(--radius-sm);font-size:0.82rem;font-weight:600;
+  cursor:pointer;transition:all var(--transition-fast);margin-top:8px;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.share-btn:hover{border-color:var(--primary);color:var(--primary);background:rgba(124,58,237,0.06);}
+
+/* === Toast === */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:#1e1b4b;color:#fff;padding:14px 24px;border-radius:var(--radius-sm);
+  font-size:0.9rem;z-index:10000;box-shadow:var(--shadow-lg);
+  transition:transform 0.3s ease,opacity 0.3s ease;opacity:0;pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto;}
+
 /* === Print === */
 @media print{
   .nav,.top-banner,.sidebar,.scroll-top,.search-card,.chips,.footer .bottom-banner,.mid-ad{display:none !important;}
@@ -802,6 +827,8 @@ async function doSearch() {
 
   var results = document.getElementById('results');
   searchBtn.disabled = true;
+  searchBtn.classList.add('btn-loading');
+  searchBtn.querySelector('span:last-child').textContent = ' 추천 중...';
 
   // Add to recent searches
   addRecentSearch(query);
@@ -857,6 +884,8 @@ async function doSearch() {
       '</div></div>';
   } finally {
     searchBtn.disabled = false;
+    searchBtn.classList.remove('btn-loading');
+    searchBtn.innerHTML = '<span>🔮</span> <span>AI 선물 추천</span>';
     searchInput.disabled = false;
     clearInterval(loadingInterval);
   }
@@ -903,6 +932,7 @@ function renderResults(gifts) {
     html += '</div></div>';
     html += '<div class="card-reason">' + escapeHtml(item.reason) + '</div>';
     html += '<a href="' + coupangUrl + '" target="_blank" rel="noopener noreferrer" class="coupang-btn" aria-label="' + escapeHtml(item.name) + ' 최저가 보기">🔍 최저가 보기</a>';
+    html += '<button class="share-btn" onclick="shareGift(\'' + escapeHtml(item.name).replace(/'/g,'\\\'') + '\',\'' + escapeHtml(item.reason).replace(/'/g,'\\\'') + '\')" type="button">📤 공유하기</button>';
     html += '</div>';
   });
 
@@ -937,6 +967,43 @@ function filterByBudget(budget) {
     }
   });
 }
+
+// === Toast ===
+var toastEl = document.createElement('div');
+toastEl.className = 'toast';
+toastEl.id = 'toast';
+document.body.appendChild(toastEl);
+var toastTimer = null;
+function showToast(msg, duration) {
+  duration = duration || 2500;
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, duration);
+}
+
+// === Share Gift ===
+function shareGift(name, reason) {
+  var text = '🎁 ' + name + '\n' + reason + '\n\nGiftFinder에서 추천받았어요!';
+  if (navigator.share) {
+    navigator.share({ title: 'GiftFinder 추천 선물', text: text }).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(text).then(function(){
+      showToast('📋 클립보드에 복사되었습니다!');
+    }).catch(function(){
+      showToast('복사에 실패했습니다.');
+    });
+  }
+}
+
+// === ESC to close error toast ===
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var errEl = document.querySelector('.error-msg');
+    if (errEl) errEl.remove();
+    toastEl.classList.remove('show');
+  }
+});
 </script>
 </body>
 </html>
