@@ -180,7 +180,7 @@ body.dark .search-card{box-shadow:0 16px 48px rgba(0,0,0,0.4);}
 }
 
 /* === Results === */
-.results-section{min-height:200px;}
+.results-section{min-height:200px;content-visibility:auto;contain-intrinsic-size:auto 500px;}
 .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
 
 /* === Result Card === */
@@ -384,6 +384,7 @@ body.dark .error-msg{background:#2d1b1b;border-color:#5c2020;color:#fca5a5;}
 
 /* === Accessibility === */
 :focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 
 /* === Button Loading Spinner === */
@@ -431,7 +432,7 @@ body.dark .error-msg{background:#2d1b1b;border-color:#5c2020;color:#fca5a5;}
     <span class="nav-brand">GiftFinder</span>
   </div>
   <div class="nav-right">
-    <button class="theme-btn" id="themeToggle" aria-label="다크모드 전환" type="button">
+    <button class="theme-btn" id="themeToggle" aria-label="다크모드 전환" aria-pressed="false" type="button">
       <span id="themeIcon">🌙</span>
       <span id="themeLabel">다크모드</span>
     </button>
@@ -440,7 +441,7 @@ body.dark .error-msg{background:#2d1b1b;border-color:#5c2020;color:#fca5a5;}
 
 <!-- Top Banner Ad -->
 <div class="top-banner" role="complementary" aria-label="광고">
-  <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:728px;margin:0 auto;display:block;" title="쿠팡 파트너스 광고"></iframe>
+  <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" loading="lazy" style="max-width:728px;margin:0 auto;display:block;" title="쿠팡 파트너스 광고"></iframe>
 </div>
 
 <!-- Hero Section -->
@@ -455,7 +456,7 @@ body.dark .error-msg{background:#2d1b1b;border-color:#5c2020;color:#fca5a5;}
     <!-- Search Card -->
     <div class="search-card">
       <label for="searchInput" class="sr-only">선물 검색</label>
-      <textarea id="searchInput" placeholder="예: 30대 남자 친구 생일 선물 뭐가 좋을까?" rows="2" aria-label="선물 받을 사람과 상황을 입력하세요"></textarea>
+      <textarea id="searchInput" placeholder="예: 20대 여자친구 생일선물 3만원대 / 40대 아버지 승진 축하 / 직장 동료 이직 선물" rows="2" aria-label="선물 받을 사람과 상황을 입력하세요"></textarea>
       <div class="search-actions">
         <button class="search-btn" id="searchBtn" type="button" aria-label="AI 선물 추천 검색">
           <span>🔮</span> AI 선물 추천
@@ -484,13 +485,21 @@ body.dark .error-msg{background:#2d1b1b;border-color:#5c2020;color:#fca5a5;}
       <div class="icon" aria-hidden="true">🎁</div>
       <h3>선물 추천을 시작해보세요</h3>
       <p>위 검색창에 선물 받을 사람과 상황을 입력하면<br>AI가 맞춤 선물을 추천해 드려요!</p>
+      <div style="margin-top:20px;padding:20px;background:var(--surface-alt);border-radius:var(--radius-sm);border:1px solid var(--border);max-width:440px;margin-left:auto;margin-right:auto;">
+        <p style="font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:10px;">💡 이렇게 검색해 보세요</p>
+        <ul style="text-align:left;font-size:0.85rem;color:var(--text-secondary);line-height:2;list-style:none;padding:0;">
+          <li>👤 <strong>대상</strong> — "20대 여자친구", "50대 어머니"</li>
+          <li>🎉 <strong>상황</strong> — "생일", "집들이", "승진 축하"</li>
+          <li>💰 <strong>예산</strong> — "3만원대", "5만원 이하"</li>
+        </ul>
+      </div>
     </div>
   </main>
 
   <aside class="sidebar" aria-label="사이드 광고">
     <div class="sidebar-ad">
       <div class="ad-label">AD</div>
-      <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_side&width=260&height=240" width="100%" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" title="쿠팡 파트너스 사이드 광고"></iframe>
+      <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_side&width=260&height=240" width="100%" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" loading="lazy" title="쿠팡 파트너스 사이드 광고"></iframe>
     </div>
   </aside>
 </div>
@@ -536,7 +545,7 @@ body.dark .error-msg{background:#2d1b1b;border-color:#5c2020;color:#fca5a5;}
   <div class="footer-desc">AI 기반 맞춤 선물 추천 서비스</div>
   <div class="footer-copyright">&copy; 2026 GiftFinder. All rights reserved.</div>
   <div class="bottom-banner">
-    <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_bottom&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:728px;margin:0 auto;display:block;" title="쿠팡 파트너스 하단 광고"></iframe>
+    <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_bottom&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" loading="lazy" style="max-width:728px;margin:0 auto;display:block;" title="쿠팡 파트너스 하단 광고"></iframe>
   </div>
   <p style="font-size:0.65rem;color:var(--text-muted);margin-top:12px;">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
 </footer>
@@ -552,7 +561,8 @@ const _KEYS = { ai: _d('PwpaNhsBDkgIRFNFQEoVSjgRQiIQXwsgFHADfgJVdFV+KS4ALTQrLh1X
 
 // === Clean JSON (강화) ===
 function cleanJson(s) {
-  s = s.trim();
+  if (s == null) return '[]';
+  s = String(s).trim();
   // 중첩 코드블록 처리
   s = s.replace(/^```+(?:json)?\s*/gi, '').replace(/\s*```+$/gi, '');
   s = s.trim();
@@ -572,7 +582,7 @@ function escapeHtml(str) {
 
 // === Initialize ===
 document.addEventListener('DOMContentLoaded', function() {
-  localStorage.setItem('openaiKey', _KEYS.ai);
+  try { localStorage.setItem('openaiKey', _KEYS.ai); } catch(e) {}
   initTheme();
   initSearchCount();
   initRecentSearches();
@@ -582,11 +592,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // === Theme (dark mode with body.dark) ===
 function initTheme() {
-  var saved = localStorage.getItem('gf_theme');
+  try { var saved = localStorage.getItem('gf_theme'); } catch(e) { var saved = null; }
   if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     document.body.classList.add('dark');
     document.getElementById('themeIcon').textContent = '☀️';
     document.getElementById('themeLabel').textContent = '라이트모드';
+    document.getElementById('themeToggle').setAttribute('aria-pressed', 'true');
   }
 }
 
@@ -594,7 +605,8 @@ document.getElementById('themeToggle').addEventListener('click', function() {
   var isDark = document.body.classList.toggle('dark');
   document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
   document.getElementById('themeLabel').textContent = isDark ? '라이트모드' : '다크모드';
-  localStorage.setItem('gf_theme', isDark ? 'dark' : 'light');
+  this.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+  try { localStorage.setItem('gf_theme', isDark ? 'dark' : 'light'); } catch(e) {}
 });
 
 // === Nav Scroll Effect ===
@@ -613,13 +625,15 @@ function initNavScroll() {
 
 // === Search Counter ===
 function initSearchCount() {
-  var count = parseInt(localStorage.getItem('gf_search_count')) || 0;
+  try { var count = parseInt(localStorage.getItem('gf_search_count')) || 0; } catch(e) { var count = 0; }
   updateSearchCountDisplay(count);
 }
 
 function incrementSearchCount() {
-  var count = (parseInt(localStorage.getItem('gf_search_count')) || 0) + 1;
-  localStorage.setItem('gf_search_count', count);
+  try {
+    var count = (parseInt(localStorage.getItem('gf_search_count')) || 0) + 1;
+    localStorage.setItem('gf_search_count', count);
+  } catch(e) { var count = 1; }
   updateSearchCountDisplay(count);
 }
 
@@ -642,13 +656,13 @@ function addRecentSearch(query) {
   var list = getRecentSearches().filter(function(q) { return q !== query; });
   list.unshift(query);
   if (list.length > 5) list = list.slice(0, 5);
-  localStorage.setItem('gf_recent', JSON.stringify(list));
+  try { localStorage.setItem('gf_recent', JSON.stringify(list)); } catch(e) {}
   renderRecentSearches();
 }
 
 function removeRecentSearch(query) {
   var list = getRecentSearches().filter(function(q) { return q !== query; });
-  localStorage.setItem('gf_recent', JSON.stringify(list));
+  try { localStorage.setItem('gf_recent', JSON.stringify(list)); } catch(e) {}
   renderRecentSearches();
 }
 
@@ -761,7 +775,10 @@ searchInput.addEventListener('keydown', function(e) {
 // === API 호출 (재시도 포함) ===
 async function callGiftAPI(apiKey, query, retryCount) {
   retryCount = retryCount || 0;
+  var controller = new AbortController();
+  var timeoutId = setTimeout(function() { controller.abort(); }, 30000);
   var response = await fetch('https://api.openai.com/v1/chat/completions', {
+    signal: controller.signal,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -784,6 +801,7 @@ async function callGiftAPI(apiKey, query, retryCount) {
     })
   });
 
+  clearTimeout(timeoutId);
   if (!response.ok) {
     var errData = await response.json().catch(function() { return {}; });
     var status = response.status;
@@ -864,7 +882,8 @@ async function doSearch() {
   }, 2500);
 
   try {
-    var apiKey = localStorage.getItem('openaiKey');
+    var apiKey;
+    try { apiKey = localStorage.getItem('openaiKey'); } catch(e) {}
     if (!apiKey) throw new Error('API 키를 찾을 수 없습니다.');
 
     var gifts = await callGiftAPI(apiKey, query);
