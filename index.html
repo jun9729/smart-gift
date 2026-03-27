@@ -4,219 +4,706 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GiftFinder — AI가 완벽한 선물을 찾아드립니다</title>
+<meta name="description" content="AI가 상황에 맞는 완벽한 선물을 추천합니다. 생일, 기념일, 승진 등 모든 상황에 맞는 선물을 찾아보세요.">
+<meta name="keywords" content="선물추천,AI선물,생일선물,기념일선물,크리스마스선물">
+<meta property="og:title" content="GiftFinder — AI 선물 추천">
+<meta property="og:description" content="AI가 완벽한 선물을 찾아드립니다">
+<meta property="og:type" content="website">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#7c3aed">
+<link rel="canonical" href="https://giftfinder.pages.dev/">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+/* === CSS Variables === */
 :root{
   --primary:#7c3aed;--primary-light:#a78bfa;--primary-dark:#5b21b6;
-  --accent:#f59e0b;--accent-light:#fbbf24;
-  --bg:#f8f7ff;--surface:#ffffff;--text:#1e1b4b;--text-secondary:#6b7280;
-  --border:#e5e7eb;--shadow:0 4px 24px rgba(124,58,237,0.08);
-  --radius:16px;--radius-sm:10px;
+  --accent:#f59e0b;--accent-light:#fbbf24;--accent-dark:#d97706;
+  --coupang:#e44d26;--coupang-dark:#c4341d;
+  --bg:#f8f7ff;--surface:#ffffff;--surface-alt:#f3f0ff;
+  --text:#1e1b4b;--text-secondary:#6b7280;--text-muted:#9ca3af;
+  --border:#e5e7eb;--border-light:#f3f4f6;
+  --shadow-sm:0 2px 8px rgba(124,58,237,0.06);
+  --shadow:0 4px 24px rgba(124,58,237,0.08);
+  --shadow-lg:0 12px 40px rgba(124,58,237,0.12);
+  --shadow-xl:0 20px 60px rgba(124,58,237,0.16);
+  --radius:16px;--radius-sm:10px;--radius-xs:8px;
+  --transition-fast:0.15s ease;--transition:0.3s ease;--transition-slow:0.5s ease;
 }
-[data-theme="dark"]{
-  --bg:#0f0d1a;--surface:#1a1730;--text:#e8e6f0;--text-secondary:#9ca3af;
-  --border:#2d2b3d;--shadow:0 4px 24px rgba(0,0,0,0.3);
+
+/* === Dark Mode === */
+body.dark{
+  --bg:#0b0a14;--surface:#16142a;--surface-alt:#1e1b3a;
+  --text:#eceaf4;--text-secondary:#a0a0b8;--text-muted:#6b6b80;
+  --border:#2a2845;--border-light:#1e1b3a;
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.2);
+  --shadow:0 4px 24px rgba(0,0,0,0.3);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.4);
+  --shadow-xl:0 20px 60px rgba(0,0,0,0.5);
 }
+
 html{scroll-behavior:smooth;}
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;display:flex;flex-direction:column;
+  transition:background var(--transition),color var(--transition);
+  -webkit-font-smoothing:antialiased;
+}
 
-/* Header */
-.header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);transition:background .3s;}
-.logo{font-size:1.4rem;font-weight:900;color:var(--primary);display:flex;align-items:center;gap:8px;}
-.logo span{font-size:1.6rem;}
-.theme-toggle{background:var(--surface);border:2px solid var(--border);border-radius:50px;padding:6px 14px;cursor:pointer;font-size:1.1rem;transition:all .3s;color:var(--text);}
-.theme-toggle:hover{border-color:var(--primary);background:var(--primary);color:#fff;}
+/* === Navigation Bar (Sticky) === */
+.nav{
+  background:rgba(255,255,255,0.85);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:1000;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  transition:background var(--transition),border-color var(--transition),box-shadow var(--transition);
+}
+body.dark .nav{background:rgba(22,20,42,0.9);border-bottom-color:var(--border);}
+.nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,0.08);}
+body.dark .nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,0.3);}
+.nav-left{display:flex;align-items:center;gap:10px;}
+.nav-logo{font-size:1.5rem;line-height:1;}
+.nav-brand{font-size:1.2rem;font-weight:900;color:var(--primary);letter-spacing:-0.5px;}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.theme-btn{
+  background:var(--surface-alt);border:1.5px solid var(--border);
+  border-radius:50px;padding:8px 16px;cursor:pointer;
+  font-size:0.95rem;transition:all var(--transition);
+  color:var(--text);display:flex;align-items:center;gap:6px;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.theme-btn:hover{border-color:var(--primary);background:var(--primary);color:#fff;}
+.theme-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
 
-/* Top Banner */
-.top-banner{text-align:center;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);}
+/* === Top Banner Ad === */
+.top-banner{text-align:center;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border-light);}
 
-/* Hero */
-.hero{background:linear-gradient(135deg,#7c3aed 0%,#a78bfa 50%,#f59e0b 100%);padding:60px 24px;text-align:center;position:relative;overflow:hidden;}
-.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
-.hero-content{position:relative;z-index:1;max-width:700px;margin:0 auto;}
-.hero h1{font-size:2.6rem;font-weight:900;color:#fff;margin-bottom:12px;text-shadow:0 2px 8px rgba(0,0,0,0.15);}
-.hero p{font-size:1.15rem;color:rgba(255,255,255,0.9);margin-bottom:32px;line-height:1.7;}
+/* === Hero Section === */
+.hero{
+  background:linear-gradient(135deg,#7c3aed 0%,#a78bfa 40%,#c084fc 60%,#f59e0b 100%);
+  padding:72px 24px 96px;text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero::after{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:60px;
+  background:var(--bg);
+  clip-path:ellipse(55% 100% at 50% 100%);
+  transition:background var(--transition);
+}
+.hero-content{position:relative;z-index:1;max-width:720px;margin:0 auto;}
+.hero h1{
+  font-size:2.8rem;font-weight:900;color:#fff;margin-bottom:14px;
+  text-shadow:0 2px 12px rgba(0,0,0,0.15);line-height:1.3;letter-spacing:-1px;
+}
+.hero p{font-size:1.15rem;color:rgba(255,255,255,0.92);margin-bottom:12px;line-height:1.8;}
+.hero-counter{
+  font-size:0.9rem;color:rgba(255,255,255,0.75);margin-bottom:28px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.hero-counter strong{color:#fff;font-weight:700;}
 
-/* Search */
-.search-box{max-width:600px;margin:0 auto;position:relative;}
-.search-box textarea{width:100%;padding:18px 24px;border:none;border-radius:var(--radius);font-size:1.05rem;font-family:'Noto Sans KR',sans-serif;resize:none;height:64px;box-shadow:0 8px 32px rgba(0,0,0,0.15);outline:none;transition:box-shadow .3s;background:var(--surface);color:var(--text);}
-.search-box textarea:focus{box-shadow:0 8px 40px rgba(124,58,237,0.3);}
-.search-box textarea::placeholder{color:var(--text-secondary);}
-.search-btn{margin-top:14px;background:linear-gradient(135deg,var(--accent),#d97706);color:#fff;border:none;padding:14px 36px;border-radius:50px;font-size:1.05rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(245,158,11,0.4);}
-.search-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(245,158,11,0.5);}
+/* === Search Card === */
+.search-card{
+  max-width:620px;margin:0 auto;
+  background:var(--surface);border-radius:20px;
+  padding:28px;box-shadow:0 16px 48px rgba(0,0,0,0.15);
+  transition:background var(--transition),box-shadow var(--transition);
+}
+body.dark .search-card{box-shadow:0 16px 48px rgba(0,0,0,0.4);}
+.search-card textarea{
+  width:100%;padding:16px 20px;
+  border:2px solid var(--border);border-radius:var(--radius-sm);
+  font-size:1.05rem;font-family:'Noto Sans KR',sans-serif;
+  resize:none;height:72px;outline:none;
+  transition:border-color var(--transition),box-shadow var(--transition);
+  background:var(--bg);color:var(--text);line-height:1.6;
+}
+.search-card textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(124,58,237,0.12);}
+.search-card textarea::placeholder{color:var(--text-muted);}
+
+.search-actions{display:flex;gap:12px;margin-top:16px;align-items:center;}
+.search-btn{
+  flex:1;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;border:none;padding:14px 28px;border-radius:50px;
+  font-size:1.05rem;font-weight:700;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  transition:transform var(--transition-fast),box-shadow var(--transition);
+  box-shadow:0 4px 20px rgba(124,58,237,0.35);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.search-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,58,237,0.45);}
 .search-btn:active{transform:translateY(0);}
-.search-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.search-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none !important;}
+.search-btn:focus-visible{outline:2px solid #fff;outline-offset:2px;}
 
-/* Chips */
+/* === Recent Searches === */
+.recent-searches{margin-top:14px;}
+.recent-label{font-size:0.8rem;color:var(--text-muted);margin-bottom:6px;}
+.recent-list{display:flex;flex-wrap:wrap;gap:6px;}
+.recent-item{
+  background:var(--surface-alt);border:1px solid var(--border);
+  padding:5px 12px;border-radius:50px;font-size:0.8rem;
+  cursor:pointer;transition:all var(--transition-fast);color:var(--text-secondary);
+  display:flex;align-items:center;gap:4px;
+}
+.recent-item:hover{border-color:var(--primary);color:var(--primary);background:rgba(124,58,237,0.06);}
+.recent-item .remove{
+  font-size:0.7rem;opacity:0.5;margin-left:2px;
+  transition:opacity var(--transition-fast);
+}
+.recent-item:hover .remove{opacity:1;}
+
+/* === Chips === */
 .chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:20px;}
-.chip{background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);padding:8px 18px;border-radius:50px;font-size:0.9rem;cursor:pointer;transition:all .3s;backdrop-filter:blur(4px);}
-.chip:hover{background:rgba(255,255,255,0.35);transform:translateY(-1px);}
+.chip{
+  background:rgba(255,255,255,0.18);color:#fff;
+  border:1px solid rgba(255,255,255,0.25);
+  padding:9px 20px;border-radius:50px;font-size:0.88rem;
+  cursor:pointer;transition:all var(--transition);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.chip:hover{background:rgba(255,255,255,0.32);transform:translateY(-2px);}
+.chip:focus-visible{outline:2px solid #fff;outline-offset:2px;}
 
-/* Layout */
-.main-wrap{flex:1;max-width:1200px;width:100%;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr 280px;gap:24px;}
-@media(max-width:900px){.main-wrap{grid-template-columns:1fr;}.sidebar{display:none;}}
+/* === Main Layout === */
+.main-wrap{
+  flex:1;max-width:1200px;width:100%;margin:0 auto;
+  padding:32px 20px;display:grid;
+  grid-template-columns:1fr 280px;gap:28px;
+}
 
-/* Sidebar */
-.sidebar{display:flex;flex-direction:column;gap:20px;}
-.sidebar-ad{background:var(--surface);border-radius:var(--radius);padding:12px;border:1px solid var(--border);text-align:center;}
-.sidebar-ad-label{font-size:0.75rem;color:var(--text-secondary);margin-bottom:6px;}
-
-/* Results */
+/* === Results === */
 .results-section{min-height:200px;}
-.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;}
-.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column;}
-.result-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(124,58,237,0.12);}
-.card-emoji{font-size:2.8rem;margin-bottom:12px;}
-.card-name{font-size:1.15rem;font-weight:700;margin-bottom:6px;color:var(--text);}
-.card-price{font-size:0.95rem;color:var(--primary);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:4px;}
-.card-reason{font-size:0.9rem;color:var(--text-secondary);line-height:1.6;margin-bottom:16px;flex:1;}
-.coupang-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#e44d26,#c4341d);color:#fff;text-decoration:none;padding:10px 20px;border-radius:var(--radius-sm);font-size:0.9rem;font-weight:600;transition:transform .2s,box-shadow .2s;}
-.coupang-btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(228,77,38,0.3);}
+.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
 
-/* Mid-ad */
-.mid-ad{grid-column:1/-1;text-align:center;padding:12px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);}
-.mid-ad-label{font-size:0.75rem;color:var(--text-secondary);margin-bottom:6px;}
+/* === Result Card === */
+.result-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px;
+  box-shadow:var(--shadow-sm);
+  transition:transform var(--transition-fast),box-shadow var(--transition);
+  display:flex;flex-direction:column;
+  opacity:0;transform:translateY(16px);
+  animation:fadeInUp 0.45s ease forwards;
+}
+.result-card:nth-child(1){animation-delay:0.05s;}
+.result-card:nth-child(2){animation-delay:0.1s;}
+.result-card:nth-child(3){animation-delay:0.15s;}
+.result-card:nth-child(4){animation-delay:0.2s;}
+.result-card:nth-child(5){animation-delay:0.25s;}
+.result-card:nth-child(6){animation-delay:0.3s;}
+.result-card:nth-child(7){animation-delay:0.35s;}
+.result-card:nth-child(8){animation-delay:0.4s;}
+.result-card:nth-child(9){animation-delay:0.45s;}
+.result-card:nth-child(10){animation-delay:0.5s;}
 
-/* Loading */
-.loading{text-align:center;padding:60px 20px;}
-.spinner{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.loading-text{color:var(--text-secondary);font-size:1rem;}
+@keyframes fadeInUp{
+  to{opacity:1;transform:translateY(0);}
+}
 
-/* Empty */
-.empty-state{text-align:center;padding:60px 20px;color:var(--text-secondary);}
-.empty-state .icon{font-size:4rem;margin-bottom:16px;}
-.empty-state p{font-size:1.05rem;line-height:1.7;}
+.result-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);}
+.card-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+.card-emoji{font-size:3rem;line-height:1;flex-shrink:0;}
+.card-info{flex:1;min-width:0;}
+.card-name{font-size:1.1rem;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:4px;}
+.card-price{
+  display:inline-block;background:linear-gradient(135deg,rgba(124,58,237,0.1),rgba(167,139,250,0.1));
+  color:var(--primary);font-size:0.85rem;font-weight:600;
+  padding:3px 10px;border-radius:50px;
+}
+body.dark .card-price{background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(167,139,250,0.2));}
+.card-reason{font-size:0.9rem;color:var(--text-secondary);line-height:1.7;margin-bottom:18px;flex:1;}
+.coupang-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:linear-gradient(135deg,var(--coupang),var(--coupang-dark));
+  color:#fff;text-decoration:none;padding:11px 22px;
+  border-radius:var(--radius-sm);font-size:0.9rem;font-weight:600;
+  transition:transform var(--transition-fast),box-shadow var(--transition);
+  box-shadow:0 2px 8px rgba(228,77,38,0.2);
+}
+.coupang-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(228,77,38,0.3);}
+.coupang-btn:focus-visible{outline:2px solid var(--coupang);outline-offset:2px;}
 
-/* Footer */
-.footer{background:var(--surface);border-top:1px solid var(--border);padding:24px;text-align:center;margin-top:auto;}
-.footer-text{font-size:0.85rem;color:var(--text-secondary);line-height:1.8;}
-.footer-brand{font-weight:700;color:var(--primary);}
-.bottom-banner{margin-top:16px;}
+/* === Mid-ad === */
+.mid-ad{
+  grid-column:1/-1;text-align:center;padding:16px;
+  background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);
+  position:relative;
+}
+.ad-label{
+  display:inline-block;font-size:0.65rem;color:var(--text-muted);
+  background:var(--surface-alt);padding:2px 8px;border-radius:4px;
+  margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;
+  border:1px solid var(--border-light);
+}
 
-/* Scroll to top */
-.scroll-top{position:fixed;bottom:24px;right:24px;width:48px;height:48px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:1.3rem;cursor:pointer;box-shadow:0 4px 16px rgba(124,58,237,0.3);transition:opacity .3s,transform .3s;opacity:0;transform:translateY(20px);pointer-events:none;z-index:99;display:flex;align-items:center;justify-content:center;}
-.scroll-top.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
-.scroll-top:hover{background:var(--primary-dark);}
+/* === Sidebar === */
+.sidebar{display:flex;flex-direction:column;gap:20px;}
+.sidebar-ad{
+  background:var(--surface);border-radius:var(--radius);
+  padding:14px;border:1px solid var(--border);text-align:center;
+  position:relative;
+}
 
-/* Error */
-.error-msg{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:16px 20px;border-radius:var(--radius-sm);margin-bottom:16px;font-size:0.95rem;}
-[data-theme="dark"] .error-msg{background:#2d1b1b;border-color:#5c2020;color:#fca5a5;}
+/* === Skeleton Loading === */
+.skeleton-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+.skeleton-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px;
+  animation:pulse 1.8s ease-in-out infinite;
+}
+.skeleton-line{
+  background:var(--border);border-radius:6px;
+  margin-bottom:12px;
+}
+.skeleton-emoji{width:48px;height:48px;border-radius:12px;background:var(--border);margin-bottom:14px;}
+.skeleton-title{height:18px;width:70%;}
+.skeleton-price{height:14px;width:40%;margin-bottom:16px;}
+.skeleton-text{height:12px;width:100%;}
+.skeleton-text-short{height:12px;width:80%;}
+.skeleton-btn{height:40px;width:55%;border-radius:var(--radius-sm);margin-top:8px;}
+
+@keyframes pulse{
+  0%,100%{opacity:1;}
+  50%{opacity:0.4;}
+}
+
+.loading-message{text-align:center;padding:20px 0 0;color:var(--text-secondary);font-size:0.95rem;}
+
+/* === Empty State === */
+.empty-state{text-align:center;padding:72px 20px;color:var(--text-secondary);}
+.empty-state .icon{font-size:4.5rem;margin-bottom:20px;filter:grayscale(0.2);}
+.empty-state h3{font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:8px;}
+.empty-state p{font-size:1rem;line-height:1.8;max-width:400px;margin:0 auto;}
+
+/* === FAQ Section === */
+.faq-section{
+  max-width:720px;width:100%;margin:0 auto;
+  padding:48px 20px 24px;
+}
+.faq-title{
+  font-size:1.4rem;font-weight:900;text-align:center;
+  margin-bottom:28px;color:var(--text);
+}
+.faq-item{
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  margin-bottom:10px;overflow:hidden;
+  background:var(--surface);transition:box-shadow var(--transition);
+}
+.faq-item:hover{box-shadow:var(--shadow-sm);}
+.faq-question{
+  width:100%;background:none;border:none;
+  padding:18px 20px;font-size:1rem;font-weight:600;
+  text-align:left;cursor:pointer;display:flex;
+  align-items:center;justify-content:space-between;gap:12px;
+  color:var(--text);font-family:'Noto Sans KR',sans-serif;
+  transition:color var(--transition-fast);
+}
+.faq-question:hover{color:var(--primary);}
+.faq-question:focus-visible{outline:2px solid var(--primary);outline-offset:-2px;}
+.faq-arrow{
+  font-size:0.8rem;transition:transform var(--transition);flex-shrink:0;
+  color:var(--text-muted);
+}
+.faq-item.open .faq-arrow{transform:rotate(180deg);}
+.faq-answer{
+  max-height:0;overflow:hidden;
+  transition:max-height 0.4s ease,padding 0.3s ease;
+}
+.faq-item.open .faq-answer{max-height:200px;padding:0 20px 18px;}
+.faq-answer p{
+  font-size:0.92rem;line-height:1.8;color:var(--text-secondary);
+}
+
+/* === Footer === */
+.footer{
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:32px 24px;text-align:center;margin-top:auto;
+  transition:background var(--transition),border-color var(--transition);
+}
+.footer-brand{font-weight:900;color:var(--primary);font-size:1.1rem;}
+.footer-desc{font-size:0.85rem;color:var(--text-secondary);margin-top:4px;line-height:1.7;}
+.footer-affiliate{
+  font-size:0.78rem;color:var(--text-muted);margin-top:12px;
+  padding-top:12px;border-top:1px solid var(--border-light);line-height:1.6;
+}
+.footer-copyright{font-size:0.75rem;color:var(--text-muted);margin-top:8px;}
+.bottom-banner{margin-top:20px;}
+
+/* === Scroll to Top === */
+.scroll-top{
+  position:fixed;bottom:28px;right:28px;width:50px;height:50px;
+  border-radius:50%;background:var(--primary);color:#fff;border:none;
+  font-size:1.2rem;cursor:pointer;
+  box-shadow:0 4px 20px rgba(124,58,237,0.35);
+  transition:opacity var(--transition),transform var(--transition),background var(--transition-fast);
+  opacity:0;transform:translateY(20px) scale(0.8);pointer-events:none;
+  z-index:999;display:flex;align-items:center;justify-content:center;
+}
+.scroll-top.visible{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+.scroll-top:hover{background:var(--primary-dark);transform:translateY(-2px) scale(1.05);}
+.scroll-top:focus-visible{outline:2px solid var(--primary);outline-offset:4px;}
+
+/* === Error === */
+.error-msg{
+  background:#fef2f2;border:1px solid #fecaca;color:#991b1b;
+  padding:18px 22px;border-radius:var(--radius-sm);margin-bottom:16px;
+  font-size:0.95rem;line-height:1.6;display:flex;align-items:flex-start;gap:10px;
+}
+body.dark .error-msg{background:#2d1b1b;border-color:#5c2020;color:#fca5a5;}
+
+/* === Responsive === */
+@media(max-width:900px){
+  .main-wrap{grid-template-columns:1fr;}
+  .sidebar{order:1;}
+}
+@media(max-width:640px){
+  .nav{padding:0 16px;height:54px;}
+  .nav-brand{font-size:1.05rem;}
+  .hero{padding:48px 16px 72px;}
+  .hero h1{font-size:1.9rem;}
+  .hero p{font-size:1rem;}
+  .search-card{padding:20px;margin:0 -4px;}
+  .search-card textarea{font-size:0.95rem;height:64px;padding:14px 16px;}
+  .search-btn{padding:12px 20px;font-size:0.95rem;}
+  .chips{gap:8px;}
+  .chip{padding:7px 14px;font-size:0.82rem;}
+  .main-wrap{padding:20px 14px;gap:20px;}
+  .results-grid{grid-template-columns:1fr;gap:14px;}
+  .result-card{padding:20px;}
+  .faq-section{padding:32px 14px 16px;}
+  .footer{padding:24px 16px;}
+}
+
+/* === Accessibility === */
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
+/* === Print === */
+@media print{
+  .nav,.top-banner,.sidebar,.scroll-top,.search-card,.chips,.footer .bottom-banner,.mid-ad{display:none !important;}
+  .hero{padding:20px;background:#7c3aed !important;-webkit-print-color-adjust:exact;}
+  .main-wrap{grid-template-columns:1fr !important;}
+}
 </style>
 </head>
 <body>
 
-<!-- Header -->
-<header class="header">
-  <div class="logo"><span>🎁</span> GiftFinder</div>
-  <button class="theme-toggle" id="themeToggle" aria-label="다크모드 전환">🌙</button>
-</header>
+<!-- Skip Navigation -->
+<a href="#searchInput" class="sr-only" style="position:absolute;top:0;left:0;background:var(--primary);color:#fff;padding:8px 16px;z-index:9999;">검색으로 건너뛰기</a>
+
+<!-- Navigation Bar -->
+<nav class="nav" id="navbar" role="navigation" aria-label="메인 네비게이션">
+  <div class="nav-left">
+    <span class="nav-logo" aria-hidden="true">🎁</span>
+    <span class="nav-brand">GiftFinder</span>
+  </div>
+  <div class="nav-right">
+    <button class="theme-btn" id="themeToggle" aria-label="다크모드 전환" type="button">
+      <span id="themeIcon">🌙</span>
+      <span id="themeLabel">다크모드</span>
+    </button>
+  </div>
+</nav>
 
 <!-- Top Banner Ad -->
-<div class="top-banner">
-  <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:728px;margin:0 auto;display:block;"></iframe>
+<div class="top-banner" role="complementary" aria-label="광고">
+  <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:728px;margin:0 auto;display:block;" title="쿠팡 파트너스 광고"></iframe>
 </div>
 
-<!-- Hero -->
-<section class="hero">
+<!-- Hero Section -->
+<section class="hero" aria-label="메인 검색">
   <div class="hero-content">
-    <h1>AI가 완벽한 선물을 찾아드립니다</h1>
+    <h1>AI가 완벽한 선물을<br>찾아드립니다</h1>
     <p>누구에게, 어떤 상황에 줄 선물인지 알려주세요.<br>AI가 딱 맞는 선물을 추천해 드릴게요!</p>
-    <div class="search-box">
-      <textarea id="searchInput" placeholder="예: 30대 남자 친구 생일 선물 뭐가 좋을까?" rows="2"></textarea>
-      <br>
-      <button class="search-btn" id="searchBtn">🔮 AI 선물 추천</button>
+    <div class="hero-counter" id="heroCounter" aria-live="polite">
+      <span>🔥</span> 지금까지 <strong id="searchCount">0</strong>명이 선물을 찾았습니다
     </div>
-    <div class="chips">
-      <span class="chip" data-query="30대 남자 생일선물">🎂 30대 남자 생일선물</span>
-      <span class="chip" data-query="여자친구 크리스마스 선물">🎄 여자친구 크리스마스</span>
-      <span class="chip" data-query="부모님 결혼기념일 선물">💍 부모님 결혼기념일</span>
-      <span class="chip" data-query="직장 동료 승진 축하 선물">🎉 직장 동료 승진 축하</span>
+
+    <!-- Search Card -->
+    <div class="search-card">
+      <label for="searchInput" class="sr-only">선물 검색</label>
+      <textarea id="searchInput" placeholder="예: 30대 남자 친구 생일 선물 뭐가 좋을까?" rows="2" aria-label="선물 받을 사람과 상황을 입력하세요"></textarea>
+      <div class="search-actions">
+        <button class="search-btn" id="searchBtn" type="button" aria-label="AI 선물 추천 검색">
+          <span>🔮</span> AI 선물 추천
+        </button>
+      </div>
+      <div class="recent-searches" id="recentSearches" style="display:none;" aria-label="최근 검색어">
+        <div class="recent-label">최근 검색</div>
+        <div class="recent-list" id="recentList"></div>
+      </div>
+    </div>
+
+    <!-- Example Chips -->
+    <div class="chips" role="list" aria-label="추천 검색어">
+      <button class="chip" role="listitem" data-query="30대 남자 생일선물" type="button">🎂 30대 남자 생일선물</button>
+      <button class="chip" role="listitem" data-query="여자친구 크리스마스 선물" type="button">🎄 여자친구 크리스마스</button>
+      <button class="chip" role="listitem" data-query="부모님 결혼기념일 선물" type="button">💍 부모님 결혼기념일</button>
+      <button class="chip" role="listitem" data-query="직장 동료 승진 축하 선물" type="button">🎉 직장 동료 승진 축하</button>
     </div>
   </div>
 </section>
 
 <!-- Main Content -->
 <div class="main-wrap">
-  <main class="results-section" id="results">
+  <main class="results-section" id="results" aria-live="polite" aria-label="검색 결과">
     <div class="empty-state" id="emptyState">
-      <div class="icon">🎁</div>
+      <div class="icon" aria-hidden="true">🎁</div>
+      <h3>선물 추천을 시작해보세요</h3>
       <p>위 검색창에 선물 받을 사람과 상황을 입력하면<br>AI가 맞춤 선물을 추천해 드려요!</p>
     </div>
   </main>
 
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="사이드 광고">
     <div class="sidebar-ad">
-      <div class="sidebar-ad-label">광고</div>
-      <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_side&width=260&height=240" width="100%" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url"></iframe>
+      <div class="ad-label">AD</div>
+      <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_side&width=260&height=240" width="100%" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" title="쿠팡 파트너스 사이드 광고"></iframe>
     </div>
     <div class="sidebar-ad">
-      <div class="sidebar-ad-label">광고</div>
-      <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_side&width=260&height=240" width="100%" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url"></iframe>
+      <div class="ad-label">AD</div>
+      <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_side2&width=260&height=240" width="100%" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" title="쿠팡 파트너스 사이드 광고"></iframe>
     </div>
   </aside>
 </div>
 
-<!-- Footer -->
-<footer class="footer">
-  <div class="footer-text">
-    <span class="footer-brand">GiftFinder</span> — AI 선물 추천 서비스<br>
-    이 포스팅은 쿠팡 파트너스 활동의 일환으로 수수료를 제공받습니다.
+<!-- FAQ Section -->
+<section class="faq-section" aria-label="자주 묻는 질문">
+  <h2 class="faq-title">자주 묻는 질문</h2>
+
+  <div class="faq-item">
+    <button class="faq-question" type="button" aria-expanded="false">
+      <span>어떻게 작동하나요?</span>
+      <span class="faq-arrow" aria-hidden="true">▼</span>
+    </button>
+    <div class="faq-answer" role="region">
+      <p>선물 받을 사람의 나이, 성별, 관계, 상황 등을 입력하면 AI가 분석하여 가장 적합한 선물을 5~8개 추천해 드립니다. 추천된 선물은 바로 쿠팡에서 검색하여 구매할 수 있습니다.</p>
+    </div>
   </div>
-  <div class="bottom-banner" style="margin-top:16px;">
-    <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:728px;margin:0 auto;display:block;"></iframe>
+
+  <div class="faq-item">
+    <button class="faq-question" type="button" aria-expanded="false">
+      <span>무료인가요?</span>
+      <span class="faq-arrow" aria-hidden="true">▼</span>
+    </button>
+    <div class="faq-answer" role="region">
+      <p>네, GiftFinder의 모든 선물 추천 서비스는 완전히 무료입니다. 회원가입도 필요 없이 바로 이용하실 수 있습니다.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question" type="button" aria-expanded="false">
+      <span>추천 정확도는 어떤가요?</span>
+      <span class="faq-arrow" aria-hidden="true">▼</span>
+    </button>
+    <div class="faq-answer" role="region">
+      <p>최신 AI 기술을 활용하여 상황에 맞는 선물을 추천합니다. 검색어를 구체적으로 입력할수록(나이, 취미, 예산 등) 더 정확한 추천을 받으실 수 있습니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer" role="contentinfo">
+  <div class="footer-brand">GiftFinder</div>
+  <div class="footer-desc">AI 기반 맞춤 선물 추천 서비스</div>
+  <div class="footer-affiliate">
+    이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+  </div>
+  <div class="footer-copyright">&copy; 2026 GiftFinder. All rights reserved.</div>
+  <div class="bottom-banner">
+    <iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_bottom&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:728px;margin:0 auto;display:block;" title="쿠팡 파트너스 하단 광고"></iframe>
   </div>
 </footer>
 
 <!-- Scroll to Top -->
-<button class="scroll-top" id="scrollTopBtn" aria-label="맨 위로">↑</button>
+<button class="scroll-top" id="scrollTopBtn" aria-label="맨 위로 스크롤" type="button">↑</button>
 
 <script>
-// === API Key ===
+// === API Key (Obfuscated — preserved as-is) ===
 const _EK = 'LawFinder2026!@#';
 function _d(e){const d=atob(e);let r='';for(let i=0;i<d.length;i++)r+=String.fromCharCode(d.charCodeAt(i)^_EK.charCodeAt(i%_EK.length));return r;}
 const _KEYS = { ai: _d('PwpaNhsBDkgIRFNFQEoVSjgRQiIQXwsgFHADfgJVdFV+KS4ALTQrLh1XAGsCVCtqDlIhBDMEKhEwYXt4UxkFUQALPwIOLzs3RlRRU05pFmYrCyN1KwIGDjR4Y2VnGBBIeQtCBw4HISQqY3FCWUh2YhZYIApRBBcwPmpyWFtoLnwWVCI2LwFRCTNDdntVdHkVHBEoMFpYJlc3VkJjUE83Ty4xAAc=') };
 
+// === Clean JSON (preserved) ===
+function cleanJson(s) { return s.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim(); }
+
+// === Escape HTML (preserved) ===
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// === Initialize ===
 document.addEventListener('DOMContentLoaded', function() {
   localStorage.setItem('openaiKey', _KEYS.ai);
   initTheme();
+  initSearchCount();
+  initRecentSearches();
+  initFAQ();
+  initNavScroll();
 });
 
-// === Clean JSON ===
-function cleanJson(s) { return s.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim(); }
-
-// === Theme ===
+// === Theme (dark mode with body.dark) ===
 function initTheme() {
-  const saved = localStorage.getItem('theme');
-  if (saved === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    document.getElementById('themeToggle').textContent = '☀️';
+  var saved = localStorage.getItem('gf_theme');
+  if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.body.classList.add('dark');
+    document.getElementById('themeIcon').textContent = '☀️';
+    document.getElementById('themeLabel').textContent = '라이트모드';
   }
 }
 
 document.getElementById('themeToggle').addEventListener('click', function() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  if (isDark) {
-    document.documentElement.removeAttribute('data-theme');
-    this.textContent = '🌙';
-    localStorage.setItem('theme', 'light');
-  } else {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    this.textContent = '☀️';
-    localStorage.setItem('theme', 'dark');
-  }
+  var isDark = document.body.classList.toggle('dark');
+  document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+  document.getElementById('themeLabel').textContent = isDark ? '라이트모드' : '다크모드';
+  localStorage.setItem('gf_theme', isDark ? 'dark' : 'light');
 });
 
+// === Nav Scroll Effect ===
+function initNavScroll() {
+  var nav = document.getElementById('navbar');
+  var lastScroll = 0;
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 10) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+    lastScroll = window.scrollY;
+  }, { passive: true });
+}
+
+// === Search Counter ===
+function initSearchCount() {
+  var count = parseInt(localStorage.getItem('gf_search_count')) || 0;
+  updateSearchCountDisplay(count);
+}
+
+function incrementSearchCount() {
+  var count = (parseInt(localStorage.getItem('gf_search_count')) || 0) + 1;
+  localStorage.setItem('gf_search_count', count);
+  updateSearchCountDisplay(count);
+}
+
+function updateSearchCountDisplay(count) {
+  var el = document.getElementById('searchCount');
+  if (el) el.textContent = count.toLocaleString('ko-KR');
+}
+
+// === Recent Searches (localStorage, max 5) ===
+function initRecentSearches() {
+  renderRecentSearches();
+}
+
+function getRecentSearches() {
+  try { return JSON.parse(localStorage.getItem('gf_recent')) || []; }
+  catch(e) { return []; }
+}
+
+function addRecentSearch(query) {
+  var list = getRecentSearches().filter(function(q) { return q !== query; });
+  list.unshift(query);
+  if (list.length > 5) list = list.slice(0, 5);
+  localStorage.setItem('gf_recent', JSON.stringify(list));
+  renderRecentSearches();
+}
+
+function removeRecentSearch(query) {
+  var list = getRecentSearches().filter(function(q) { return q !== query; });
+  localStorage.setItem('gf_recent', JSON.stringify(list));
+  renderRecentSearches();
+}
+
+function renderRecentSearches() {
+  var list = getRecentSearches();
+  var container = document.getElementById('recentSearches');
+  var listEl = document.getElementById('recentList');
+
+  if (list.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = 'block';
+  listEl.innerHTML = '';
+
+  list.forEach(function(q) {
+    var item = document.createElement('span');
+    item.className = 'recent-item';
+    item.setAttribute('role', 'button');
+    item.setAttribute('tabindex', '0');
+    item.setAttribute('aria-label', q + ' 재검색');
+
+    var text = document.createTextNode(q);
+    var removeBtn = document.createElement('span');
+    removeBtn.className = 'remove';
+    removeBtn.textContent = '✕';
+    removeBtn.setAttribute('aria-label', q + ' 삭제');
+
+    item.appendChild(text);
+    item.appendChild(removeBtn);
+
+    item.addEventListener('click', function(e) {
+      if (e.target === removeBtn) {
+        e.stopPropagation();
+        removeRecentSearch(q);
+        return;
+      }
+      document.getElementById('searchInput').value = q;
+      doSearch();
+    });
+
+    item.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('searchInput').value = q;
+        doSearch();
+      }
+    });
+
+    listEl.appendChild(item);
+  });
+}
+
+// === FAQ Accordion ===
+function initFAQ() {
+  document.querySelectorAll('.faq-question').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var item = this.closest('.faq-item');
+      var isOpen = item.classList.contains('open');
+
+      // Close all others
+      document.querySelectorAll('.faq-item.open').forEach(function(openItem) {
+        openItem.classList.remove('open');
+        openItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+      });
+
+      // Toggle current
+      if (!isOpen) {
+        item.classList.add('open');
+        this.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+}
+
 // === Scroll to Top ===
-const scrollTopBtn = document.getElementById('scrollTopBtn');
+var scrollTopBtn = document.getElementById('scrollTopBtn');
 window.addEventListener('scroll', function() {
-  if (window.scrollY > 400) {
+  if (window.scrollY > 300) {
     scrollTopBtn.classList.add('visible');
   } else {
     scrollTopBtn.classList.remove('visible');
   }
-});
+}, { passive: true });
+
 scrollTopBtn.addEventListener('click', function() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
@@ -230,8 +717,8 @@ document.querySelectorAll('.chip').forEach(function(chip) {
 });
 
 // === Search ===
-const searchBtn = document.getElementById('searchBtn');
-const searchInput = document.getElementById('searchInput');
+var searchBtn = document.getElementById('searchBtn');
+var searchInput = document.getElementById('searchInput');
 
 searchBtn.addEventListener('click', doSearch);
 searchInput.addEventListener('keydown', function(e) {
@@ -242,20 +729,39 @@ searchInput.addEventListener('keydown', function(e) {
 });
 
 async function doSearch() {
-  const query = searchInput.value.trim();
-  if (!query) return;
+  var query = searchInput.value.trim();
+  if (!query) {
+    searchInput.focus();
+    return;
+  }
 
-  const results = document.getElementById('results');
+  var results = document.getElementById('results');
   searchBtn.disabled = true;
 
-  // Show loading
-  results.innerHTML = '<div class="loading"><div class="spinner"></div><div class="loading-text">AI가 선물을 찾고 있어요...</div></div>';
+  // Add to recent searches
+  addRecentSearch(query);
+
+  // Show skeleton loading
+  var skeletonHtml = '<div class="skeleton-grid">';
+  for (var i = 0; i < 6; i++) {
+    skeletonHtml += '<div class="skeleton-card">';
+    skeletonHtml += '<div class="skeleton-line skeleton-emoji"></div>';
+    skeletonHtml += '<div class="skeleton-line skeleton-title"></div>';
+    skeletonHtml += '<div class="skeleton-line skeleton-price"></div>';
+    skeletonHtml += '<div class="skeleton-line skeleton-text"></div>';
+    skeletonHtml += '<div class="skeleton-line skeleton-text-short"></div>';
+    skeletonHtml += '<div class="skeleton-line skeleton-btn"></div>';
+    skeletonHtml += '</div>';
+  }
+  skeletonHtml += '</div>';
+  skeletonHtml += '<div class="loading-message">🔮 AI가 최적의 선물을 찾고 있어요...</div>';
+  results.innerHTML = skeletonHtml;
 
   try {
-    const apiKey = localStorage.getItem('openaiKey');
+    var apiKey = localStorage.getItem('openaiKey');
     if (!apiKey) throw new Error('API 키를 찾을 수 없습니다.');
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    var response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -278,42 +784,49 @@ async function doSearch() {
     });
 
     if (!response.ok) {
-      const errData = await response.json().catch(function() { return {}; });
+      var errData = await response.json().catch(function() { return {}; });
       throw new Error(errData.error?.message || '요청에 실패했습니다. (HTTP ' + response.status + ')');
     }
 
-    const data = await response.json();
-    const raw = data.choices[0].message.content;
-    const cleaned = cleanJson(raw);
-    const gifts = JSON.parse(cleaned);
+    var data = await response.json();
+    var raw = data.choices[0].message.content;
+    var cleaned = cleanJson(raw);
+    var gifts = JSON.parse(cleaned);
+
+    // Increment search count
+    incrementSearchCount();
 
     renderResults(gifts);
 
   } catch (err) {
-    results.innerHTML = '<div class="error-msg">⚠️ ' + err.message + '</div><div class="empty-state"><div class="icon">😅</div><p>죄송합니다, 오류가 발생했어요.<br>다시 시도해 주세요!</p></div>';
+    results.innerHTML = '<div class="error-msg"><span aria-hidden="true">⚠️</span> <span>' + escapeHtml(err.message) + '</span></div>' +
+      '<div class="empty-state"><div class="icon">😅</div><h3>오류가 발생했어요</h3><p>죄송합니다, 다시 시도해 주세요!</p></div>';
   } finally {
     searchBtn.disabled = false;
   }
 }
 
 function renderResults(gifts) {
-  const results = document.getElementById('results');
-  let html = '<div class="results-grid">';
+  var results = document.getElementById('results');
+  var html = '<div class="results-grid">';
 
   gifts.forEach(function(item, index) {
-    const coupangUrl = 'https://www.coupang.com/np/search?component=&q=' + encodeURIComponent(item.searchQuery) + '&channel=user&src=1032001&spec=10305010&addtag=400&ctag=giftfinder&lptag=AF7220529';
+    var coupangUrl = 'https://www.coupang.com/np/search?component=&q=' + encodeURIComponent(item.searchQuery) + '&channel=user&src=1032001&spec=10305010&addtag=400&ctag=giftfinder&lptag=AF7220529';
 
-    html += '<div class="result-card">';
-    html += '<div class="card-emoji">' + (item.emoji || '🎁') + '</div>';
+    html += '<div class="result-card" style="animation-delay:' + (index * 0.06) + 's">';
+    html += '<div class="card-header">';
+    html += '<div class="card-emoji" aria-hidden="true">' + (item.emoji || '🎁') + '</div>';
+    html += '<div class="card-info">';
     html += '<div class="card-name">' + escapeHtml(item.name) + '</div>';
-    html += '<div class="card-price">💰 ' + escapeHtml(item.price) + '</div>';
+    html += '<span class="card-price">' + escapeHtml(item.price) + '</span>';
+    html += '</div></div>';
     html += '<div class="card-reason">' + escapeHtml(item.reason) + '</div>';
-    html += '<a href="' + coupangUrl + '" target="_blank" rel="noopener noreferrer" class="coupang-btn">🛒 쿠팡에서 보기</a>';
+    html += '<a href="' + coupangUrl + '" target="_blank" rel="noopener noreferrer" class="coupang-btn" aria-label="' + escapeHtml(item.name) + ' 쿠팡에서 보기">🛒 쿠팡에서 보기</a>';
     html += '</div>';
 
     // Insert mid-ad after 3rd item
     if (index === 2 && gifts.length > 3) {
-      html += '<div class="mid-ad"><div class="mid-ad-label">광고</div><iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_mid&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:728px;margin:0 auto;display:block;"></iframe></div>';
+      html += '<div class="mid-ad"><div class="ad-label">AD</div><iframe src="https://ads-partners.coupang.com/widgets.html?id=862498&template=carousel&trackingCode=AF7220529&subId=giftfinder_mid&width=680&height=70" width="100%" height="70" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:728px;margin:0 auto;display:block;" title="쿠팡 파트너스 중간 광고"></iframe></div>';
     }
   });
 
@@ -322,11 +835,6 @@ function renderResults(gifts) {
 
   // Smooth scroll to results
   results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 </script>
 </body>
